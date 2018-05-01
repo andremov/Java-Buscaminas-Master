@@ -12,14 +12,13 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
  *
  * @author Andrés Movilla
  */
-public class Buscaminas extends JFrame implements ActionListener {
+public class Buscaminas extends JFrame implements ActionListener, Runnable {
 
     /**
      * Matriz de JButton que corresponden al tablero.
@@ -62,7 +61,7 @@ public class Buscaminas extends JFrame implements ActionListener {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-	new Buscaminas();
+	new Thread(new Buscaminas()).start();
     }
 
     
@@ -71,10 +70,11 @@ public class Buscaminas extends JFrame implements ActionListener {
      * Crea la ventana del juego.
      */
     public Buscaminas() {
-	setSize(700, 700);
+	int size = 20 + 20 + (10*60);
+	setSize(size+50, size+30);
 	setLocationRelativeTo(null);
 	setLayout(null);
-	setTitle("Buscaminas");
+	setTitle("Buscaminas ");
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	setResizable(false);
 
@@ -143,6 +143,24 @@ public class Buscaminas extends JFrame implements ActionListener {
 	textoTablero[x][y].setText(""+n);
     }
 
+
+    
+    @Override
+    public void run() {
+	while (true) {
+	    
+	    String t = this.getTitle();
+	    String t2 = t.substring(1);
+	    setTitle(t2+t.substring(0,1));
+	    
+	    try {
+		Thread.sleep(100);
+	    } catch (Exception e) {
+
+	    }
+	}
+    }
+    
     
     
     /**
@@ -152,6 +170,7 @@ public class Buscaminas extends JFrame implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+	
 	for (int i = 0; i < tamanoTablero; i++) {
 	    for (int j = 0; j < tamanoTablero; j++) {
 		if (botonesTablero[i][j] == e.getSource()) {
