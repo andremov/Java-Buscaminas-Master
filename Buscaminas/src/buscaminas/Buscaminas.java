@@ -31,6 +31,10 @@ public class Buscaminas extends JFrame implements Runnable {
      */
     ImageIcon imagenBandera;
 
+    /*
+	PUNTOS: PARTE A
+    */
+    
     /**
      * Tamaño de una casilla.
      */
@@ -333,7 +337,7 @@ public class Buscaminas extends JFrame implements Runnable {
     }
 
     /*
-	PUNTOS
+	PUNTOS: PARTE B
      */
     
     /**
