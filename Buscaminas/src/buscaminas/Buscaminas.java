@@ -17,6 +17,7 @@ import javax.swing.SwingConstants;
 /**
  *
  * @author Andrés Movilla
+ * MASTER FILE
  */
 public class Buscaminas extends JFrame implements Runnable {
 
@@ -110,7 +111,7 @@ public class Buscaminas extends JFrame implements Runnable {
 		}
 	    }
 	});
-
+	
 	crearCasillas();
 	agregarCasillas();
 	crearMinas();
