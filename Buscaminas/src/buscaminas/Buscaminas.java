@@ -76,7 +76,7 @@ public class Buscaminas extends JFrame implements Runnable {
     int casillasSeleccionadas = 0;
 
     /**
-     * Banderas plantadas
+     * Banderas plantadas.
      */
     int banderasPlantadas = 0;
 
@@ -110,7 +110,7 @@ public class Buscaminas extends JFrame implements Runnable {
 		    if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
 			casillaBandera(p[0], p[1]);
 		    } else if (javax.swing.SwingUtilities.isLeftMouseButton(e)) {
-			casillaAbrir(p[0], p[1]);
+			casillaSeleccionar(p[0], p[1]);
 		    }
 		}
 	    }
@@ -178,7 +178,7 @@ public class Buscaminas extends JFrame implements Runnable {
     /**
      * Muestra un aviso de perdida y reinicia el juego.
      */
-    void usuarioPerdio() {
+    void mostrarVentanaPerdedor() {
 	JOptionPane.showMessageDialog(this, "Perdió!", "Fin del juego", JOptionPane.PLAIN_MESSAGE);
 	reiniciar();
     }
@@ -186,7 +186,7 @@ public class Buscaminas extends JFrame implements Runnable {
     /**
      * Muestra un aviso de ganada y reinicia el juego.
      */
-    void usuarioGano() {
+    void mostrarVentanaGanador() {
 	JOptionPane.showMessageDialog(this, "Ganó!", "Fin del juego", JOptionPane.PLAIN_MESSAGE);
 	reiniciar();
     }
@@ -270,8 +270,8 @@ public class Buscaminas extends JFrame implements Runnable {
 	textoTablero[x][y].setIcon(imagenMina);
     }
 
-    /**
-     * Pone la imagen de la bandera de la casilla.
+	/**
+     * Muestra una bandera en la casilla indicada.
      *
      * @param x Posicion X de la casilla indicada.
      * @param y Posicion Y de la casilla indicada.
@@ -281,7 +281,7 @@ public class Buscaminas extends JFrame implements Runnable {
     }
 
     /**
-     * Quita la imagen de la bandera de la casilla.
+     * Quita la imagen de la bandera de la casilla indicada.
      *
      * @param x Posicion X de la casilla indicada.
      * @param y Posicion Y de la casilla indicada.
@@ -318,6 +318,17 @@ public class Buscaminas extends JFrame implements Runnable {
     }
 
     /**
+     * Limpiar casilla indicada.
+     *
+     * @param x Posicion X de la casilla indicada.
+     * @param y Posicion Y de la casilla indicada.
+     */
+    void limpiarCasilla(int x, int y) {
+	textoTablero[x][y].setText("");
+	textoTablero[x][y].setIcon(null);
+    }
+    
+    /**
      * Agrega los JButton y JLabel previamente creados a la ventana.
      */
     void agregarCasillas() {
@@ -348,11 +359,10 @@ public class Buscaminas extends JFrame implements Runnable {
      */
     void reiniciarCasilla(int x, int y) {
 	pintarPlano(x, y);
-	textoTablero[x][y].setText("");
-	textoTablero[x][y].setIcon(null);
+	limpiarCasilla(x, y);
 	botonesPresionados[x][y] = 0;
     }
-
+    
     /**
      * Reinicia el juego.
      */
@@ -398,7 +408,7 @@ public class Buscaminas extends JFrame implements Runnable {
     void revisarGanar() {
 	if (casillasSeleccionadas + banderasPlantadas == tamanoTablero * tamanoTablero) {
 	    mostrarTablero();
-	    usuarioGano();
+	    mostrarVentanaGanador();
 	}
     }
 
@@ -426,7 +436,7 @@ public class Buscaminas extends JFrame implements Runnable {
      * @param x Posicion X del boton presionado.
      * @param y Posicion Y del boton presionado.
      */
-    void casillaAbrir(int x, int y) {
+    void casillaSeleccionar(int x, int y) {
 	if (esPosicionValida(x, y)) {
 	    if (botonesPresionados[x][y] == 0) {
 		botonesPresionados[x][y] = 1;
@@ -434,16 +444,15 @@ public class Buscaminas extends JFrame implements Runnable {
 		if (minasTablero[x][y] == 1) {
 		    pintarRojo(x, y);
 		    mostrarMina(x, y);
-		    usuarioPerdio();
+		    mostrarVentanaPerdedor();
 		} else {
 		    casillasSeleccionadas = casillasSeleccionadas + 1;
+			pintarAzul(x, y);
 
 		    int minasAlrededor = minasAlrededor(x, y);
 		    if (minasAlrededor == 0) {
-			pintarAzul(x, y);
-			casillasAlrededor(x, y);
+			casillaSeleccionarAlrededor(x, y);
 		    } else {
-			pintarAzul(x, y);
 			muestraMinasAlrededor(x, y, minasAlrededor);
 		    }
 		    revisarGanar();
@@ -453,14 +462,14 @@ public class Buscaminas extends JFrame implements Runnable {
     }
 
     /**
-     * Llama todos los metodos relacionados con banderear una casilla.
+     * Llama todos los metodos relacionados con poner una bandera en una casilla.
      *
      * @param x Posicion X del boton presionado.
      * @param y Posicion Y del boton presionado.
      */
     void casillaBandera(int x, int y) {
 	if (esPosicionValida(x, y)) {
-	    if (botonesPresionados[x][y] == 0 && banderasPlantadas < totalMinas) {
+	    if (botonesPresionados[x][y] == 0 && banderasPlantadas <= totalMinas) {
 		botonesPresionados[x][y] = 2;
 		banderasPlantadas = banderasPlantadas + 1;
 		plantarBandera(x, y);
@@ -479,16 +488,16 @@ public class Buscaminas extends JFrame implements Runnable {
      * @param x Posicion X de casilla indicada.
      * @param y Posicion Y de casilla indicada.
      */
-    void casillasAlrededor(int x, int y) {
-	casillaAbrir(x + 1, y);
-	casillaAbrir(x, y + 1);
-	casillaAbrir(x, y - 1);
-	casillaAbrir(x - 1, y);
+    void casillaSeleccionarAlrededor(int x, int y) {
+	casillaSeleccionar(x + 1, y);
+	casillaSeleccionar(x, y + 1);
+	casillaSeleccionar(x, y - 1);
+	casillaSeleccionar(x - 1, y);
 
-	casillaAbrir(x - 1, y - 1);
-	casillaAbrir(x + 1, y - 1);
-	casillaAbrir(x + 1, y + 1);
-	casillaAbrir(x - 1, y + 1);
+	casillaSeleccionar(x - 1, y - 1);
+	casillaSeleccionar(x + 1, y - 1);
+	casillaSeleccionar(x + 1, y + 1);
+	casillaSeleccionar(x - 1, y + 1);
     }
 
     /**
